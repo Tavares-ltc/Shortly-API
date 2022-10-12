@@ -1,0 +1,28 @@
+{
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "joi": "^17.6.3",
+    "pg": "^8.8.0"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon ./src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tavares-ltc/Shortly-API.git"
+  },
+  "author": "Lucas Tavares",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tavares-ltc/Shortly-API/issues"
+  },
+  "homepage": "https://github.com/Tavares-ltc/Shortly-API#readme",
+  "description": ""
+}
