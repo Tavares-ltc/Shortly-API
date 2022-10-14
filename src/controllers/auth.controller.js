@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
+dotenv.config()
+
 async function signup(req, res){
 const {name, email, password } = req.body
 const encryptedPassword = bcrypt.hashSync(password, 10)
@@ -24,6 +26,7 @@ try {
 }
 
 async function signin(req, res){
+
     const {password, email} = req.body;
     
     try {
@@ -36,6 +39,14 @@ async function signin(req, res){
         const token = jwt.sign({
             user_id: user.id
         }, process.env.JWT_TOKEN)
+
+        const hasToken = (await connection.query('SELECT token FROM sessions WHERE "userId" = $1;', [user.id])).rows[0];
+        if(hasToken){
+            await connection.query('UPDATE sessions SET token=$1, "createdAt"=NOW() WHERE "userId"=$2;',[token, user.id])
+            res.status(200);
+            return res.send({token: token})
+        }
+
 
         const promise = await connection.query(`INSERT INTO sessions("userId", token) VALUES ($1, $2);`,[user.id, token ]);
         if(promise.rowCount < 1){
