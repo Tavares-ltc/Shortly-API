@@ -1,10 +1,9 @@
 import express from 'express';
 import { signin, signup } from '../controllers/auth.controller.js';
-import verifySigninSchema from '../middlewares/signin.schema.js';
-import verifySignupSchema from '../middlewares/signup.schema.js';
+import { auxParam, verifySchema } from '../middlewares/schemas.middleware.js';
 const router = express.Router();
 
-router.post('/signup',verifySignupSchema, signup)
-router.post('/signin', verifySigninSchema, signin)
+router.post('/signup',auxParam('signup'), verifySchema, signup)
+router.post('/signin',auxParam('signin'), verifySchema, signin)
 
 export default router;
