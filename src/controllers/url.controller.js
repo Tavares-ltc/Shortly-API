@@ -1,4 +1,5 @@
 import connection from "../database/database.js";
+import express from 'express';
 import { nanoid } from "nanoid";
 
 async function shortenURL(req, res) {
@@ -34,4 +35,15 @@ async function getURL(req, res){
 
 }
 
-export { shortenURL, getURL };
+async function openURL(req, res) {
+  const shortURL = req.params.shortUrl;
+  try {
+    const url = (await connection.query('SELECT * FROM urls WHERE "shortUrl" = $1;', [shortURL])).rows[0]
+    const response = await connection.query('INSERT INTO views ("urlId") VALUES ($1);',[url.id]);
+    return res.redirect(url.url)
+  } catch (error) {
+    res.sendStatus(404)
+  }
+}
+
+export { shortenURL, getURL, openURL };
