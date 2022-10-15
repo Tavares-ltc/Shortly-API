@@ -38,9 +38,7 @@ async function signin(req, res){
         }
         const token = jwt.sign({
             user_id: user.id
-        }, process.env.TOKEN_SECRET, {
-            expiresIn: 600
-        })
+        }, process.env.TOKEN_SECRET)
 
         const hasToken = (await connection.query('SELECT token FROM sessions WHERE "userId" = $1;', [user.id])).rows[0];
         if(hasToken){
