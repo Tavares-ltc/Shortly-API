@@ -46,4 +46,23 @@ async function openURL(req, res) {
   }
 }
 
-export { shortenURL, getURL, openURL };
+async function deleteURL(req, res){
+  const urlId = req.params.id;
+  const userId = res.locals.userId;
+  try {
+    const url = (await connection.query('SELECT * FROM urls WHERE id = $1;', [urlId])).rows[0];    if(!url){
+      return res.sendStatus(404);
+    }
+    if(url.userId !== userId){
+      return res.sendStatus(401)
+    }
+    await connection.query('DELETE FROM views WHERE "urlId" = $1;', [urlId]);
+    await connection.query('DELETE FROM urls WHERE id = $1;', [urlId]);
+
+    res.sendStatus(204)
+  } catch (error) {
+    console.log(error.message)
+    res.sendStatus(500)
+  }
+}
+export { shortenURL, getURL, openURL, deleteURL };
