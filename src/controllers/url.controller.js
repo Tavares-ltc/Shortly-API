@@ -47,8 +47,8 @@ async function openURL(req, res) {
       ])
     ).rows[0];
     const response = await connection.query(
-      'INSERT INTO views ("urlId") VALUES ($1);',
-      [url.id]
+      'INSERT INTO views ("urlId", "userId") VALUES ($1, $2);',
+      [url.id, url.userId]
     );
     return res.redirect(url.url);
   } catch (error) {
@@ -127,4 +127,26 @@ async function listUrserUrls(req, res) {
     res.sendStatus(500);
   }
 }
-export { shortenURL, getURL, openURL, deleteURL, listUrserUrls };
+
+async function listRanking(req, res){
+  try {
+    const ranking = (await connection.query(`SELECT users.id, users.name,
+    (SELECT COUNT(DISTINCT urls."url") AS "urlCount" FROM urls WHERE "userId" = users.id ) AS "linksCount",
+   (SELECT COUNT(DISTINCT views.id) AS "visitCount"  FROM views WHERE "userId" = users.id ) AS "visitCount"
+     FROM users 
+      FULL JOIN urls 
+     ON users.id = "userId" 
+     FULL JOIN views ON "urlId" = urls.id
+     GROUP BY users.id,users.name,"linksCount", "visitCount" 
+   ORDER BY "visitCount" DESC
+   LIMIT 10;`)).rows
+   if(! ranking){
+    return res.sendStatus(404);
+   }
+   res.status(200);
+   res.send(ranking)
+  } catch (error) {
+    res.sendStatus(500)
+  }
+}
+export { shortenURL, getURL, openURL, deleteURL, listUrserUrls,listRanking };
