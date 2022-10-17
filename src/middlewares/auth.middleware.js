@@ -8,7 +8,7 @@ async function checkAuthorization(req, res, next) {
   if (!token) {
     return res.sendStatus(401);
   }
-  const newtoken = token.replace("Bearer ", "");
+  token = token.replace("Bearer ", "");
 
   try {
     const verifyToken = jwt.verify(token, process.env.TOKEN_SECRET);
